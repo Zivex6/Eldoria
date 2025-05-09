@@ -1,0 +1,1 @@
+Es un **juego de rol** desarrollado en Python con la libreria Tkinter, donde los jugadores exploran un mundo fantástico, luchan contra enemigos y toman decisiones estratégicas según el personaje elegido.
