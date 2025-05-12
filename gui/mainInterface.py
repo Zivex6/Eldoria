@@ -24,7 +24,6 @@ class mainInterface:
 
         options = [
             ("Nova Partida", self.nova_partida),
-            ("Carregar Partida", self.carregar_partida),
             ("Veure Resultats", self.veure_resultats),
             ("Tutorial", self.tutorial)
         ]
@@ -52,9 +51,6 @@ class mainInterface:
         self.root.quit()
         self.root.destroy()
         os.system(f"python {os.path.join(os.path.dirname(__file__), 'characterSelector.py')}")
-
-    def carregar_partida(self, e=None):
-        print("Carregant partida guardada")
 
     def veure_resultats(self, e=None):
         print("Mostrant resultats")

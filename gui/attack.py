@@ -3,10 +3,11 @@ from tkinter import ttk
 from game.combat import Combat
 
 class VentanaCombate:
-    def __init__(self, root, jugador, enemigo):
+    def __init__(self, root, jugador, enemigo, game_map):
         self.root = root
         self.jugador = jugador
         self.enemigo = enemigo
+        self.game_map = game_map  # Añade una referencia al GameMap
         
         self.ventana_combat = tk.Toplevel(root)
         self.ventana_combat.title(f"Combate contra {enemigo.name}")
@@ -88,6 +89,8 @@ class VentanaCombate:
             self.btn_atacar.config(state=tk.DISABLED)
             self.btn_cerrar.config(state=tk.NORMAL)
             self.agregar_log(f"Combate finalizado. Resultado: {resultado}")
+            if resultado == "Victoria":
+                self.game_map.eliminar_enemigo(self.jugador.x_pos, self.jugador.y_pos)
 
     def atacar(self):
         self.combat.turno_jugador()
@@ -118,6 +121,6 @@ if __name__ == "__main__":
     jugador = MockCharacter("Héroe", 100, 100)
     enemigo = MockCharacter("Orco", 80, 80)
 
-    ventana_combate = VentanaCombate(root, jugador, enemigo)
+    ventana_combate = VentanaCombate(root, jugador, enemigo, None)
     ventana_combate.agregar_log("¡Comienza el combate!")
     ventana_combate.ventana_combat.mainloop()
