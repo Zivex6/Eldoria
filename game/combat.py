@@ -1,98 +1,132 @@
 import random
+import tkinter as tk
+from tkinter import messagebox
 
 class Combat:
-    def __init__(self, jugador, enemigo, ventana_combate):
+    def __init__(self, jugador, enemic, finestra_combate):
         self.jugador = jugador
-        self.enemigo = enemigo
-        self.ventana_combate = ventana_combate
-
-    def iniciar_combate(self):
-        self.ventana_combate.agregar_log(f"¡Comienza el combate contra {self.enemigo.name}!")
-        
-        # Mostrar bonuses del jugador
-        self.ventana_combate.agregar_log("Bonuses del jugador:")
-        if hasattr(self.jugador, 'bonuses'):
-            for stat, value in self.jugador.bonuses.items():
-                self.ventana_combate.agregar_log(f"  +{value} {stat}")
-        else:
-            self.ventana_combate.agregar_log("  No tiene bonuses")
-        
-        # Mostrar bonuses del enemigo
-        self.ventana_combate.agregar_log("Bonuses del enemigo:")
-        if hasattr(self.enemigo, 'bonuses'):
-            for stat, value in self.enemigo.bonuses.items():
-                self.ventana_combate.agregar_log(f"  +{value} {stat}")
-        else:
-            self.ventana_combate.agregar_log("  No tiene bonuses")
-        
-        iniciativa_jugador, iniciativa_enemigo = self.determinar_iniciativa()
-        self.ventana_combate.agregar_log(f"Iniciativa del jugador: {iniciativa_jugador}")
-        self.ventana_combate.agregar_log(f"Iniciativa del enemigo: {iniciativa_enemigo}")
-        
-        if iniciativa_jugador >= iniciativa_enemigo:
-            self.ventana_combate.agregar_log("El jugador empieza primero.")
-            self.ventana_combate.activar_boton_atacar()
-        else:
-            self.ventana_combate.agregar_log("El enemigo empieza primero.")
-            self.ventana_combate.root.after(1000, self.turno_enemigo)
+        self.enemic = enemic
+        self.finestra_combate = finestra_combate
+        self.cura_utilitzada = False
 
     def determinar_iniciativa(self):
         return random.randint(1, 20), random.randint(1, 20)
 
-    def turno_jugador(self):
-        if self.ventana_combate.ventana_combat.winfo_exists():
-            self.ventana_combate.desactivar_boton_atacar()
-            damage, random_number = self.jugador.attack()
-            self.enemigo.hp = max(0, self.enemigo.hp - damage)  # Asegura que la vida no sea negativa
-            self.ventana_combate.agregar_log(f"{self.jugador.name} ha atacado y ha hecho {damage} de daño (Número aleatorio: {random_number}).")
-            self.ventana_combate.actualizar_barras_vida()
+    def iniciar_combate(self):
+        self.finestra_combate.agregar_log(f"¡Comença el combat contra {self.enemic.name}!")
+        
+        self.finestra_combate.agregar_log("Bonificacions del jugador:")
+        if hasattr(self.jugador, 'bonuses'):
+            for estat, valor in self.jugador.bonuses.items():
+                self.finestra_combate.agregar_log(f"  +{valor} {estat}")
+        else:
+            self.finestra_combate.agregar_log("  No té bonificacions")
+        
+        iniciativa_jugador, iniciativa_enemic = self.determinar_iniciativa()
+        self.finestra_combate.agregar_log(f"Iniciativa del jugador: {iniciativa_jugador}")
+        self.finestra_combate.agregar_log(f"Iniciativa de l'enemic: {iniciativa_enemic}")
+        
+        if iniciativa_jugador >= iniciativa_enemic:
+            self.finestra_combate.agregar_log("El jugador comença primer.")
+            self.finestra_combate.activar_botones_jugador()
+        else:
+            self.finestra_combate.agregar_log("L'enemic comença primer.")
+            self.finestra_combate.root.after(1000, self.torn_enemic)
 
-            if self.enemigo.hp <= 0:
-                self.finalizar_combate("Victoria")
+    def torn_jugador(self):
+        if self.finestra_combate.ventana_combat.winfo_exists():
+            self.finestra_combate.desactivar_botones_jugador()
+            damage, numero_aleatori = self.jugador.attack()
+            self.enemic.hp = max(0, self.enemic.hp - damage)
+            self.finestra_combate.agregar_log(f"{self.jugador.name} ha atacat i ha fet {damage} de punts de daño (Número aleatori: {numero_aleatori}).")
+            self.finestra_combate.actualizar_barras_vida()
+
+            if self.enemic.hp <= 0:
+                self.finalitzar_combate("Victoria")
             else:
-                self.ventana_combate.root.after(1000, self.turno_enemigo)
+                self.finestra_combate.root.after(1000, self.torn_enemic)
 
-    def turno_enemigo(self):
-        if self.ventana_combate.ventana_combat.winfo_exists():
-            damage, random_number = self.enemigo.attack()
-            self.jugador.hp = max(0, self.jugador.hp - damage)  # Asegura que la vida no sea negativa
-            self.ventana_combate.agregar_log(f"{self.enemigo.name} ha atacado y ha hecho {damage} de daño (Número aleatorio: {random_number}).")
-            self.ventana_combate.actualizar_barras_vida()
+    def torn_enemic(self):
+        if self.finestra_combate.ventana_combat.winfo_exists():
+            damage, numero_aleatori = self.enemic.attack()
+            self.jugador.hp = max(0, self.jugador.hp - damage)
+            self.finestra_combate.agregar_log(f"{self.enemic.name} ha atacat i ha fet {damage} de punts de daño (Número aleatori: {numero_aleatori}).")
+            self.finestra_combate.actualizar_barras_vida()
 
             if self.jugador.hp <= 0:
-                self.finalizar_combate("Derrota")
-                self.ventana_combate.root.after(2000, self.cerrar_ventana_combate)  # Cierra la ventana después de 2 segundos
+                self.finalitzar_combate("Derrota")
             else:
-                self.ventana_combate.activar_boton_atacar()
+                self.finestra_combate.activar_botones_jugador()
 
     def intentar_huir(self):
-        if random.random() < 0.5:  # 50% de probabilidad de huir
-            self.ventana_combate.agregar_log("Has logrado huir del combate.")
-            self.finalizar_combate("Huida")
+        if random.random() < 0.15:
+            self.finestra_combate.agregar_log("¡Has pogut huir del combat!")
+            self.finalitzar_combate("Huida")
         else:
-            self.ventana_combate.agregar_log("No has podido huir. El enemigo ataca.")
-            self.turno_enemigo()
+            self.finestra_combate.agregar_log("No has pogut huir. L'enemic ataca.")
+            self.torn_enemic()
 
-    def finalizar_combate(self, resultado):
-        self.ventana_combate.finalizar_combate(resultado)
-        self.ventana_combate.desactivar_boton_atacar()
-        if resultado == "Victoria":
-            self.ventana_combate.agregar_log(f"Has derrotado a {self.enemigo.name}.")
-        elif resultado == "Derrota":
-            self.ventana_combate.agregar_log("Has sido derrotado.")
-        
-        if resultado != "Derrota":
-            self.ventana_combate.btn_cerrar.config(command=self.cerrar_ventana_combate)
+    def intentar_curar(self):
+        if self.cura_utilitzada:
+            self.finestra_combate.agregar_log("¡Ja has utilitzat la teva poció de curació en aquest combat!")
+            return
+            
+        if random.random() < 0.2:
+            cura_quantitat = 30
+            self.jugador.hp = min(self.jugador.hp_max, self.jugador.hp + cura_quantitat)
+            self.finestra_combate.agregar_log(f"¡Has curat {cura_quantitat} punts de vida!")
+            self.finestra_combate.actualizar_barras_vida()
+            self.cura_utilitzada = True
+            self.finestra_combate.deshabilitar_boton_curar()
+            self.torn_enemic()
         else:
-            self.ventana_combate.btn_cerrar.config(state="disabled")  # Deshabilita el botón de cerrar en caso de derrota
+            self.finestra_combate.agregar_log("¡No has pogut curar-te! L'enemic ataca.")
+            self.torn_enemic()
 
-    def cerrar_ventana_combate(self):
-        if self.ventana_combate.ventana_combat.winfo_exists():
-            self.ventana_combate.ventana_combat.destroy()
+    def finalitzar_combate(self, resultat):
+        self.finestra_combate.finalizar_combate(resultat)
+        self.finestra_combate.desactivar_botones_jugador()
         
-        # Si el jugador ha sido derrotado, cerrar también la ventana del mapa
+        if resultat == "Victoria":
+            self.finestra_combate.agregar_log(f"Has guanyat el combat contra {self.enemic.name}.")
+        elif resultat == "Derrota":
+            self.finestra_combate.agregar_log("Has perdut el combat.")
+            self.finestra_combate.root.after(1000, self.mostrar_derrota)
+        elif resultat == "Huida":
+            self.finestra_combate.agregar_log("Has huido del combat.")
+        
+        if resultat != "Derrota":
+            self.finestra_combate.btn_cerrar.config(command=self.tancar_finestra_combate)
+        else:
+            self.finestra_combate.btn_cerrar.config(state="disabled")
+
+    def mostrar_derrota(self):
+        if self.finestra_combate.ventana_combat.winfo_exists():
+            messagebox.showinfo("Derrota", "¡Has perdut el combat!")
+            self.redirigir_al_menu_principal()
+
+    def tancar_finestra_combate(self):
+        if self.finestra_combate.ventana_combat.winfo_exists():
+            self.finestra_combate.ventana_combat.destroy()
+        
         if self.jugador.hp <= 0:
-            self.ventana_combate.game_map.root.destroy()
+            self.redirigir_al_menu_principal()
         else:
-            # Actualizar el mapa si el jugador ha ganado o huido
-            self.ventana_combate.game_map.actualitzar_mapa()
+            self.finestra_combate.game_map.actualitzar_mapa()
+
+    def redirigir_al_menu_principal(self):
+        if self.finestra_combate.ventana_combat.winfo_exists():
+            self.finestra_combate.ventana_combat.destroy()
+        
+        if hasattr(self.finestra_combate.game_map, 'root') and self.finestra_combate.game_map.root.winfo_exists():
+            self.finestra_combate.game_map.root.destroy()
+        
+        try:
+            from gui.mainInterface import mainInterface
+            root = tk.Tk()
+            app = mainInterface(root)
+            root.mainloop()
+        except Exception as e:
+            print(f"Error al carregar el menú principal: {e}")
+            if tk._default_root and tk._default_root.winfo_exists():
+                tk._default_root.destroy()

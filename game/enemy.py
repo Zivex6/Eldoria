@@ -1,29 +1,23 @@
 import random
 from characters.character import Character
 
-# Lista de nombres de enemigos
-NOMBRES_ENEMIGOS = [
-    "Troll",
-    "Orco",
-    "Goblin",
-    "Ogro"
-]
+nombre_enemigos = ["Troll", "Orco", "Goblin", "Ogro"]
 
 class Enemigo(Character):
     def __init__(self):
-        nombre = random.choice(NOMBRES_ENEMIGOS)
+        nombre = random.choice(nombre_enemigos)
         super().__init__(nombre)
-        self.hp = random.randint(50, 100)
-        self.hp_max = self.hp
-        self.strength = random.randint(5, 15)
-        self.agility = random.randint(5, 15)
+        self.hp = self.hp_max = random.randint(50, 100)
+        self.fortaleza = random.randint(5, 15)
+        self.agilidad = random.randint(5, 15)
+        self.bonuses = {}
 
     def attack(self):
-        damage = random.randint(self.strength - 2, self.strength + 2)
-        return damage, random.randint(1, 20)  # Devuelve el daño y un número aleatorio
+        damage = random.randint(self.fortaleza - 2, self.fortaleza + 2)
+        return damage, random.randint(1, 20)
 
     def defend(self):
-        return self.agility
+        return self.agilidad
 
     @property
     def hp(self):
@@ -31,7 +25,7 @@ class Enemigo(Character):
 
     @hp.setter
     def hp(self, value):
-        self._hp = max(0, value)  # Asegura que la vida no sea negativa
+        self._hp = max(0, value)
 
 class Enemics:
     def __init__(self, files, columnes):
@@ -39,15 +33,11 @@ class Enemics:
         self.generar_enemigos(files, columnes)
 
     def generar_enemigos(self, files, columnes):
-        # Genera enemigos aleatoriamente en el mapa
-        num_enemigos = (files * columnes) // 10  # Por ejemplo, 10% del mapa
+        num_enemigos = (files * columnes) // 10
         for _ in range(num_enemigos):
-            x = random.randint(0, columnes - 1)
-            y = random.randint(0, files - 1)
-            # Evita generar un enemigo en la posición (0,0)
+            x, y = random.randint(0, columnes - 1), random.randint(0, files - 1)
             while x == 0 and y == 0:
-                x = random.randint(0, columnes - 1)
-                y = random.randint(0, files - 1)
+                x, y = random.randint(0, columnes - 1), random.randint(0, files - 1)
             self.enemigos[(x, y)] = Enemigo()
 
     def hay_enemigo(self, x, y):
@@ -60,6 +50,4 @@ class Enemics:
         return self.enemigos.keys()
 
 def determinar_iniciativa(jugador, enemigo):
-    iniciativa_jugador = random.randint(1, 20)
-    iniciativa_enemigo = random.randint(1, 20)
-    return (iniciativa_jugador, iniciativa_enemigo)
+    return random.randint(1, 20), random.randint(1, 20)

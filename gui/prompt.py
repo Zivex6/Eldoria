@@ -13,7 +13,6 @@ def get_character_name(parent, character_type, color):
     dialog.transient(parent)
     dialog.grab_set()
 
-    # Centrar la ventana
     dialog.update_idletasks()
     width = dialog.winfo_width()
     height = dialog.winfo_height()

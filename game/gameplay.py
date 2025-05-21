@@ -1,4 +1,3 @@
-
 from characters.character import Character
 from characters.guerrer import Guerrer
 from characters.mag import Mag
@@ -50,6 +49,10 @@ class Jugador:
     def usar_habilidad(self):
         return self.character.usar_habilidad()
 
+    # Método para la curación
+    def heal(self, amount):
+        self.character.hp = min(self.character.hp_max, self.character.hp + amount)
+
     @property
     def name(self):
         return self.character.name
@@ -60,31 +63,40 @@ class Jugador:
 
     @hp.setter
     def hp(self, value):
-        self.character.hp = max(0, value)  # Asegura que la vida no sea negativa
+        self.character.hp = max(0, value)
 
     @property
     def hp_max(self):
         return self.character.hp_max
 
     @property
-    def strength(self):
-        return self.character.strength
+    def fortaleza(self):
+        return self.character.fortaleza
 
     @property
-    def magic(self):
-        return self.character.magic
+    def magia(self):
+        return self.character.magia
 
     @property
-    def resistance(self):
-        return self.character.resistance
+    def resistencia(self):
+        return self.character.resistencia
 
     @property
-    def accuracy(self):
-        return self.character.accuracy
+    def exactitud(self):
+        return self.character.exactitud
 
     @property
-    def agility(self):
-        return self.character.agility
+    def agilidad(self):
+        return self.character.agilidad
+
+    # Añadir acceso a bonuses si existen
+    @property
+    def bonuses(self):
+        if hasattr(self.character, 'bonuses'):
+            return self.character.bonuses
+        return {}
 
     def __getattr__(self, name):
-        return getattr(self.character, name)
+        if hasattr(self.character, name):
+            return getattr(self.character, name)
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")

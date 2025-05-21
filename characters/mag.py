@@ -1,18 +1,17 @@
+
 from .character import Character
 
 class Mag(Character):
     def __init__(self, name):
         super().__init__(name)
-        self.magic += 5  # Mages have extra magic
-        self.bonuses = {
-            "magic": 5
-        }
+        self.magia += 5
+        self.bonuses = {"magia": 5}
 
     def attack(self):
-        return self.magic * 2
+        return self.magia * 2
 
     def defend(self):
-        return self.resistance
+        return self.resistencia
 
     def get_bonus_description(self):
-        return f"Bonificación de Mag: +{self.bonuses['magic']} magia"
+        return f"Bonificación de Mag: +{self.bonuses['magia']} magia"

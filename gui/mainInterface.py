@@ -2,7 +2,6 @@ import tkinter as tk
 import os
 import sys
 
-# Afegim el directori principal del projecte al path de Python
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class mainInterface:
@@ -24,8 +23,6 @@ class mainInterface:
 
         options = [
             ("Nova Partida", self.nova_partida),
-            ("Veure Resultats", self.veure_resultats),
-            ("Tutorial", self.tutorial)
         ]
 
         for text, cmd in options:
@@ -51,12 +48,6 @@ class mainInterface:
         self.root.quit()
         self.root.destroy()
         os.system(f"python {os.path.join(os.path.dirname(__file__), 'characterSelector.py')}")
-
-    def veure_resultats(self, e=None):
-        print("Mostrant resultats")
-
-    def tutorial(self, e=None):
-        print("Mostrant tutorial")
 
 if __name__ == "__main__":
     root = tk.Tk()
